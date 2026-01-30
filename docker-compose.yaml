@@ -1,0 +1,7 @@
+version: "3.9"
+services:
+  app:
+    build: .
+    image: password-manager-backend
+    ports:
+      - "8080:8080"
