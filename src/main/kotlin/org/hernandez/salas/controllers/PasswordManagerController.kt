@@ -1,6 +1,6 @@
 package org.hernandez.salas.controllers
 
-import org.hernandez.salas.dtos.CreatePasswordRequestDto
+import org.hernandez.salas.controllers.dtos.CreatePasswordRequestDto
 import org.hernandez.salas.services.PasswordManagerService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

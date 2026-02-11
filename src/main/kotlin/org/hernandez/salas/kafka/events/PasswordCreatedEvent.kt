@@ -1,4 +1,4 @@
-package org.hernandez.salas.events
+package org.hernandez.salas.kafka.events
 
 data class PasswordCreatedEvent(
     val userId: String,

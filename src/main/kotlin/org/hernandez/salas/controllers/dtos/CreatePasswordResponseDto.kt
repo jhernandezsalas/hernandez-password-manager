@@ -1,4 +1,4 @@
-package org.hernandez.salas.dtos
+package org.hernandez.salas.controllers.dtos
 
 data class CreatePasswordResponseDto (
     val userId: String,
