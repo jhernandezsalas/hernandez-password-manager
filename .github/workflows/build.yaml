@@ -1,0 +1,52 @@
+name: Build Project
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: code
+        uses: actions/checkout@v5
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: stCarolas/setup-maven@v5
+        with:
+          maven-version: 3.9.12
+
+      - name: maven build
+        run: mvn install
+
+  publish_docker_image:
+    needs: build
+    runs-on: ubuntu-22.04
+    environment: development
+    steps:
+      - name: code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_USER_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_USER_SECRET_ACCESS_KEY }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Login to ECR
+        id: login-to-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build image, tag it, and push
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-to-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build -f Dockerfile -t $ECR_REGISTRY/${{ vars.ECR_REPOSITORY }}:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/${{ vars.ECR_REPOSITORY }}:$IMAGE_TAG
